@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Аналитика недвижимости</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6f8;--card:#ffffff;--text:#202a33;--muted:#74808c;--line:#dde3e8;
+  --navy:#263746;--accent:#4f6b8a;--accent2:#36516f;--red:#c25b56;--soft:#eef2f5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+.app{max-width:1460px;margin:0 auto;padding:28px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);font-weight:700}
+.title{font-size:30px;font-weight:750;margin:6px 0 4px}.subtitle{color:var(--muted);font-size:14px}
+.badge{background:#edf1f5;color:#3b5269;border:1px solid #d8e0e7;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:650}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(35,48,61,.045)}
+.tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--line)}.tab{border:0;background:transparent;padding:12px 16px;font-size:14px;font-weight:720;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}.tab.active{color:var(--navy);border-bottom-color:var(--navy)}.view{display:none}.view.active{display:block}.region-filters{padding:16px 18px;display:grid;grid-template-columns:repeat(4,minmax(145px,1fr));gap:14px;align-items:end;margin-bottom:18px}.region-actions{display:flex;gap:10px}.region-summary{padding:20px;margin-bottom:18px}.region-summary p{margin:0;color:var(--muted);font-size:13px}.region-placeholder{padding:34px 20px;text-align:center;color:var(--muted);margin-bottom:18px}
+.data-filters{grid-template-columns:minmax(220px,1.2fr) minmax(220px,1.2fr) auto}
+.filters{padding:16px 18px;display:grid;grid-template-columns:1.05fr 1.05fr .9fr .9fr auto auto;gap:14px;align-items:end;margin-bottom:18px}
+.period-button{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:white;color:var(--text);font-size:14px;outline:none;height:42px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.period-button:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,107,138,.10)}
+.period-button::after{content:'▾';color:var(--muted);font-size:11px}
+.actions{display:flex;gap:10px;align-items:end}
+.apply{border:0;border-radius:10px;padding:11px 18px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer;height:42px;white-space:nowrap;touch-action:manipulation}
+.reset{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;color:var(--navy);font-weight:650;cursor:pointer;height:42px;white-space:nowrap;touch-action:manipulation}
+.picker-backdrop{position:fixed;inset:0;background:rgba(24,34,44,.28);display:none;align-items:center;justify-content:center;padding:16px;z-index:1000}
+.picker-backdrop.open{display:flex}
+.month-picker{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 50px rgba(20,30,40,.18);padding:18px}
+.picker-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.picker-title{font-weight:750;font-size:16px}.picker-close{border:0;background:transparent;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);padding:2px 6px}
+.year-row{display:grid;grid-template-columns:42px 1fr 42px;gap:8px;align-items:center;margin-bottom:14px}.year-row button{height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;cursor:pointer;font-size:18px}.year-value{text-align:center;font-weight:750;font-size:18px}
+.month-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.month-option{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 8px;cursor:pointer;font-size:14px;touch-action:manipulation}.month-option:hover{border-color:var(--accent)}.month-option.selected{background:var(--navy);border-color:var(--navy);color:#fff}.month-option.disabled{opacity:.35;cursor:not-allowed;background:#f5f6f7}
+.empty-report{padding:26px 20px;text-align:center;color:var(--muted);margin-bottom:18px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.field select,.field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:white;color:var(--text);font-size:14px;outline:none;height:42px}
+.field select:focus,.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,107,138,.10)}
+.field input::placeholder{color:#9aa5af}
+.project-multi{position:relative}.multi-button{width:100%;height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);padding:10px 36px 10px 12px;text-align:left;font-size:14px;cursor:pointer;position:relative}.multi-button:after{content:'⌄';position:absolute;right:12px;top:8px;color:var(--muted);font-size:18px}.multi-panel{display:none;position:absolute;z-index:30;left:0;right:0;top:48px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 35px rgba(25,40,55,.14);padding:8px;max-height:280px;overflow:auto}.multi-panel.open{display:block}.multi-option{display:block;width:100%;border:0;background:#fff;color:var(--text);text-align:left;padding:10px 11px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation}.multi-option:hover{background:#f4f6f8}.multi-option.selected{background:#e9eef4;color:var(--navy);font-weight:700}.multi-option.selected:after{content:'✓';float:right;font-weight:800}.multi-empty{padding:10px 11px;color:var(--muted);font-size:14px}
+.passport{padding:20px;margin-bottom:18px}.section-title{font-size:18px;font-weight:750;margin:0 0 14px}.project-name{font-size:24px;font-weight:760;color:var(--navy);margin-bottom:14px}
+.passport-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.pitem{border-top:1px solid var(--line);padding-top:10px}.pitem .k{font-size:12px;color:var(--muted);margin-bottom:4px}.pitem .v{font-size:14px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.kpi{padding:17px 18px}.kpi .k{font-size:12px;color:var(--muted);margin-bottom:8px}.kpi .v{font-size:25px;font-weight:780;color:var(--navy)}.kpi .hint{font-size:11px;color:var(--muted);margin-top:5px}.kpi.neg .v{color:var(--red)}
+.insight{padding:16px 18px;margin-bottom:18px;border-left:4px solid var(--accent)}.insight strong{color:var(--navy)}.warn{color:var(--red);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}.chart-card{padding:18px;min-height:355px}.chart-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}.chart-title{font-size:15px;font-weight:720}.chart-note{font-size:11px;color:var(--muted)}.chart-wrap{height:285px}
+.utp{padding:20px;margin-bottom:24px}.utp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px}.uitem{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #edf1f5}.uitem .k{color:var(--muted);font-size:13px}.uitem .v{text-align:right;font-weight:650;font-size:13px;max-width:52%}.footer{font-size:11px;color:var(--muted);padding:0 2px 12px}
+@media(max-width:1100px){.data-filters{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr 1fr}.region-filters{grid-template-columns:repeat(2,1fr)}.passport-grid,.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.utp-grid{grid-template-columns:1fr 1fr}.apply,.reset{width:100%}}
+@media(max-width:640px){.app{padding:14px}.data-filters,.filters,.region-filters,.passport-grid,.kpis,.utp-grid{grid-template-columns:1fr}.tabs{overflow-x:auto}.tab{white-space:nowrap;padding-left:10px;padding-right:10px}.title{font-size:25px}.topbar{flex-direction:column}.badge{align-self:flex-start}.filters{gap:11px}.apply,.reset{width:100%;font-size:15px}.month-grid{grid-template-columns:repeat(3,1fr)}.month-option{padding:13px 6px}.chart-card{padding:14px}.chart-wrap{height:255px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div><div class="eyebrow">Аналитика недвижимости</div><div class="title" id="pageTitle">Аналитика по проектам</div><div class="subtitle">Продажи по проектным декларациям · тестовый MVP</div></div>
+    <div class="badge" id="topBadge"></div>
+  </div>
+  <div class="tabs">
+    <button type="button" class="tab active" data-view="projectView">Аналитика по проектам</button>
+    <button type="button" class="tab" data-view="regionView">Аналитика региона</button>
+    <button type="button" class="tab" data-view="dataView">Данные о проекте</button>
+  </div>
+
+  <div class="view active" id="projectView">
+  <div class="filters card">
+    <div class="field"><label>Застройщик</label><input id="developerFilter" type="text" list="developerList" placeholder="" autocomplete="off"><datalist id="developerList"></datalist></div>
+    <div class="field project-multi"><label>Проект</label><button type="button" class="multi-button" id="projectMultiBtn">—</button><div class="multi-panel" id="projectMultiPanel"></div></div>
+    <div class="field"><label>Период с</label><button type="button" class="period-button" id="fromBtn">—</button></div>
+    <div class="field"><label>Период по</label><button type="button" class="period-button" id="toBtn">—</button></div>
+    <button type="button" class="reset" id="reset">Весь период</button>
+    <button type="button" class="reset" id="projectClear">Очистить</button>
+    <button type="button" class="apply" id="apply">Показать отчёт</button>
+  </div>
+
+  <div class="passport card" id="projectPassportCard" style="display:none">
+    <div class="section-title">Паспорт проекта</div>
+    <div class="project-name" id="projectName"></div>
+    <div class="passport-grid" id="passport"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+  <div class="insight card" id="insight"></div>
+
+  <div class="grid2" id="projectCharts" style="display:none">
+    <div class="chart-card card"><div class="chart-head"><div class="chart-title">Продажи, шт.</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="unitsChart"></canvas></div></div>
+    <div class="chart-card card"><div class="chart-head"><div class="chart-title">Проданная площадь, м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="areaChart"></canvas></div></div>
+    <div class="chart-card card"><div class="chart-head"><div class="chart-title">Объём реализации, ₽</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="valueChart"></canvas></div></div>
+    <div class="chart-card card"><div class="chart-head"><div class="chart-title">Средняя реализованная цена, ₽/м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="priceChart"></canvas></div></div>
+  </div>
+
+  <div class="utp card" id="projectUtpCard" style="display:none"><div class="section-title">Наполнение проекта</div><div class="utp-grid" id="utp"></div></div>
+  <div class="footer">Для самого раннего доступного периода изменение не рассчитывается, потому что нет предыдущего значения. Отрицательные значения сохраняются как корректировки / расторжения.</div>
+  </div>
+
+  <div class="view" id="regionView">
+    <div class="region-filters card">
+      <div class="field"><label>Регион</label><select id="regionFilter"><option value=""></option><option value="Крым">Крым</option></select></div>
+      <div class="field"><label>Город / район</label><select id="cityFilter"><option value=""></option><option value="Ялта">Ялта</option></select></div>
+      <div class="field"><label>Застройщик</label><input id="regionDeveloper" type="text" list="developerList" placeholder="" autocomplete="off"></div>
+      <div class="field"><label>Проект</label><select id="regionProject"><option value=""></option><option value="1">Новая Ливадия, 1 очередь</option><option value="2">КД Массандра парк</option><option value="3">Массандра парк</option></select></div>
+      <div class="field"><label>Статус помещений</label><select id="statusFilter"><option value=""></option><option>Квартиры</option><option>Апартаменты</option></select></div>
+      <div class="field"><label>Класс</label><select id="classFilter"><option value=""></option><option>Бизнес</option></select></div>
+      <div class="field"><label>Срок сдачи — с квартала</label><select id="deadlineFrom"><option value=""></option><option value="2027-4">IV кв. 2027</option></select></div>
+      <div class="field"><label>Срок сдачи — по квартал</label><select id="deadlineTo"><option value=""></option><option value="2027-4">IV кв. 2027</option></select></div>
+      <div class="field"><label>Период с</label><button type="button" class="period-button" id="regionFromBtn">—</button></div>
+      <div class="field"><label>Период по</label><button type="button" class="period-button" id="regionToBtn">—</button></div>
+      <button type="button" class="reset" id="regionReset">Очистить</button>
+      <button type="button" class="apply" id="regionApply">Показать отчёт</button>
+    </div>
+    <div class="region-summary card"><div class="section-title">Аналитика региона</div><p>Фильтры работают как сегмент рынка: регион и город выбираются отдельно, а срок сдачи задаётся диапазоном кварталов.</p></div>
+    <div class="region-placeholder card" id="regionPlaceholder">Выберите параметры и нажмите «Показать отчёт».</div>
+    <div class="kpis" id="regionKpis"></div>
+    <div class="grid2" id="regionCharts" style="display:none">
+      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Продажи, шт.</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rUnitsChart"></canvas></div></div>
+      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Проданная площадь, м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rAreaChart"></canvas></div></div>
+      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Объём реализации, ₽</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rValueChart"></canvas></div></div>
+      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Средняя реализованная цена, ₽/м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rPriceChart"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="view" id="dataView">
+    <div class="filters card data-filters">
+      <div class="field"><label>Застройщик</label><input id="dataDeveloper" type="text" list="developerList" placeholder="" autocomplete="off"></div>
+      <div class="field"><label>Проект</label><select id="dataProject"><option value=""></option></select></div>
+      <button type="button" class="reset" id="dataClear">Очистить</button>
+      <button type="button" class="apply" id="dataApply">Показать проект</button>
+    </div>
+
+    <div class="passport card" id="dataPassportCard" style="display:none">
+      <div class="section-title">Паспорт проекта</div>
+      <div class="project-name" id="dataProjectName"></div>
+      <div class="passport-grid" id="dataPassport"></div>
+    </div>
+
+    <div class="utp card" id="dataUtpCard" style="display:none">
+      <div class="section-title">Наполнение проекта</div>
+      <div class="utp-grid" id="dataUtp"></div>
+    </div>
+
+    <div class="utp card" id="dataCharacteristicsCard" style="display:none">
+      <div class="section-title">Характеристики</div>
+      <div class="utp-grid" id="dataCharacteristics"></div>
+    </div>
+  </div>
+</div>
+<div class="picker-backdrop" id="pickerBackdrop" aria-hidden="true">
+  <div class="month-picker" role="dialog" aria-modal="true" aria-label="Выбор месяца">
+    <div class="picker-head"><div class="picker-title" id="pickerTitle">Выберите месяц</div><button type="button" class="picker-close" id="pickerClose" aria-label="Закрыть">×</button></div>
+    <div class="year-row"><button type="button" id="yearPrev" aria-label="Предыдущий год">‹</button><div class="year-value" id="yearValue"></div><button type="button" id="yearNext" aria-label="Следующий год">›</button></div>
+    <div class="month-grid" id="monthGrid"></div>
+  </div>
+</div>
+<script>
+const SPREADSHEET_ID='1xyNJTWFV0JefcVWdW8t24ogecbbZ9ekjAyC4VXpeskI';
+const SHEETS={projects:'Проекты',pd:'ПД',utp:'УТП',characteristics:'Характеристики'};
+const months={Январь:1,Февраль:2,Март:3,Апрель:4,Май:5,Июнь:6,Июль:7,Август:8,Сентябрь:9,Октябрь:10,Ноябрь:11,Декабрь:12};
+const monthNames=['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const short=['','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+let projects=[],pd=[],utpByProject={},characteristicsByProject={},characteristicLabels=[];
+let minMonth=null,maxMonth=null,fromValue=null,toValue=null,regionFromValue=null,regionToValue=null,activePicker='',pickerYear=null;
+let selectedProjectIds=[],charts={};
+
+const $=id=>document.getElementById(id);
+const fmt0=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n);
+const fmt1=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n);
+const fmt2=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const money=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n)+' ₽';
+const pct=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n)+'%';
+const compactMoney=n=>{const x=Number(n)||0,a=Math.abs(x),s=x<0?'-':'';if(a>=1e9)return s+(a/1e9).toLocaleString('ru-RU',{maximumFractionDigits:1})+' млрд ₽';if(a>=1e6)return s+(a/1e6).toLocaleString('ru-RU',{maximumFractionDigits:0})+' млн ₽';if(a>=1e3)return s+(a/1e3).toLocaleString('ru-RU',{maximumFractionDigits:0})+' тыс ₽';return s+fmt0(a)+' ₽'};
+const compactPrice=n=>{const x=Number(n)||0,a=Math.abs(x),s=x<0?'-':'';return a>=1000?s+(a/1000).toLocaleString('ru-RU',{maximumFractionDigits:0})+' т.р.':s+fmt0(a)+' ₽'};
+const keyFromMonthValue=v=>{if(!v)return null;const [y,m]=v.split('-').map(Number);return y*100+m};
+const monthValueFromKey=k=>`${Math.floor(k/100)}-${String(k%100).padStart(2,'0')}`;
+const displayMonthValue=v=>{if(!v)return '—';const [y,m]=v.split('-').map(Number);return `${monthNames[m]} ${y}`};
+const parseMonthValue=v=>{const [year,month]=v.split('-').map(Number);return {year,month}};
+const nval=v=>{if(v===null||v===undefined||v==='')return null;if(typeof v==='number')return v;const s=String(v).replace(/\s/g,'').replace(',','.').replace(/[^0-9.\-]/g,'');const n=Number(s);return Number.isFinite(n)?n:null};
+const sval=v=>v==null?'':String(v).trim();
+
+async function loadGvizSheet(sheetName){
+  const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&headers=1`;
+  const res=await fetch(url,{cache:'no-store'});
+  if(!res.ok) throw new Error(`Не удалось прочитать лист «${sheetName}» (${res.status})`);
+  const text=await res.text();
+  const start=text.indexOf('{'), end=text.lastIndexOf('}');
+  if(start<0||end<0) throw new Error(`Лист «${sheetName}» вернул неожиданный ответ`);
+  const data=JSON.parse(text.slice(start,end+1));
+  if(data.status==='error') throw new Error(data.errors?.[0]?.detailed_message||`Ошибка чтения «${sheetName}»`);
+  const headers=data.table.cols.map((c,i)=>sval(c.label)||`col_${i+1}`);
+  return data.table.rows.map(r=>{
+    const obj={}; headers.forEach((h,i)=>{const c=r.c?.[i];obj[h]=c?(c.f??c.v??''):''}); return obj;
+  }).filter(row=>Object.values(row).some(v=>sval(v)!==''));
+}
+
+function first(row,names){for(const n of names){if(Object.prototype.hasOwnProperty.call(row,n))return row[n]}return ''}
+function buildData(projectRows,pdRows,utpRows,charRows){
+  projects=projectRows.map(r=>({
+    id:sval(first(r,['ID проекта','ID'])),name:sval(first(r,['Название','Проект'])),developer:sval(first(r,['Застройщик'])),region:sval(first(r,['Регион'])),city:sval(first(r,['Город / район','Город'])),address:sval(first(r,['Адрес'])),status:sval(first(r,['Статус помещений'])),klass:sval(first(r,['Класс'])),deadline:sval(first(r,['Срок сдачи'])),totalUnits:nval(first(r,['Всего помещений','Общее количество квартир / апартаментов'])),totalArea:nval(first(r,['Общая продаваемая площадь, м²','Общая продаваемая площадь','Продаваемая площадь'])),finish:sval(first(r,['Отделка']))
+  })).filter(p=>p.id&&p.name);
+  utpByProject={}; utpRows.forEach(r=>{const id=sval(first(r,['ID проекта','ID']));if(!id)return;const o={};Object.entries(r).forEach(([k,v])=>{if(k!=='ID проекта'&&k!=='ID'&&sval(v)!=='')o[k]=v});utpByProject[id]=o});
+  characteristicsByProject={}; characteristicLabels=[]; if(charRows.length){characteristicLabels=Object.keys(charRows[0]).filter(k=>k!=='ID проекта'&&k!=='ID'&&!k.startsWith('col_'));}
+  charRows.forEach(r=>{const id=sval(first(r,['ID проекта','ID']));if(!id)return;const o={};characteristicLabels.forEach(k=>{if(sval(r[k])!=='')o[k]=r[k]});characteristicsByProject[id]=o});
+  pd=pdRows.map(r=>{const month=sval(first(r,['Период месяц','Месяц'])),year=nval(first(r,['Период год','Год']));return {projectId:sval(first(r,['ID проекта','ID'])),month,year,pdDate:sval(first(r,['Дата ПД'])),cumUnits:nval(first(r,['Продано накопитель шт','Продано накопительно шт','Продано накопительно, шт'])),cumArea:nval(first(r,['Продано накопительно кв.м.','Продано накопительно кв.м','Продано накопительно, м²'])),cumValue:nval(first(r,['Реализовано накопительно руб','Реализовано накопительно, ₽'])) ,key:year&&months[month]?year*100+months[month]:null}}).filter(r=>r.projectId&&r.key);
+  const groups=new Map();pd.forEach(r=>{if(!groups.has(r.projectId))groups.set(r.projectId,[]);groups.get(r.projectId).push(r)});
+  groups.forEach(rows=>{rows.sort((a,b)=>a.key-b.key);rows.forEach((r,i)=>{const p=rows[i-1];r.units=i&&r.cumUnits!=null&&p.cumUnits!=null?r.cumUnits-p.cumUnits:null;r.area=i&&r.cumArea!=null&&p.cumArea!=null?r.cumArea-p.cumArea:null;r.value=i&&r.cumValue!=null&&p.cumValue!=null?r.cumValue-p.cumValue:null;r.price=i?(r.area!==0&&r.area!=null&&r.value!=null?r.value/r.area:(r.area===0&&r.value===0?0:null)):null})});
+  pd.sort((a,b)=>a.key-b.key); if(pd.length){minMonth=monthValueFromKey(Math.min(...pd.map(r=>r.key)));maxMonth=monthValueFromKey(Math.max(...pd.map(r=>r.key)))}
+}
+
+function passportItemsFor(p){return [['Застройщик',p.developer||'—'],['Регион',p.region||'—'],['Город / район',p.city||'—'],['Адрес',p.address||'—'],['Статус помещений',p.status||'—'],['Класс',p.klass||'—'],['Срок сдачи',p.deadline||'—'],['Отделка',p.finish||'—'],['Всего помещений',p.totalUnits==null?'—':fmt0(p.totalUnits)],['Общая продаваемая площадь',p.totalArea==null?'—':fmt1(p.totalArea)+' м²']]}
+function renderKeyValues(target,entries,empty='Нет заполненных данных'){target.innerHTML=entries.length?entries.map(([k,v])=>`<div class="uitem"><div class="k">${k}</div><div class="v">${v}</div></div>`).join(''):`<div class="uitem"><div class="v">${empty}</div></div>`}
+function projectPdRows(id){return pd.filter(r=>String(r.projectId)===String(id))}
+
+function syncProjectButton(){if(!selectedProjectIds.length)$('projectMultiBtn').textContent='—';else if(selectedProjectIds.length===1){const p=projects.find(x=>String(x.id)===selectedProjectIds[0]);$('projectMultiBtn').textContent=p?p.name:'1 проект'}else $('projectMultiBtn').textContent=`Выбрано проектов: ${selectedProjectIds.length}`}
+function syncProjectOptions(){const q=$('developerFilter').value.trim().toLocaleLowerCase('ru');const filtered=!q?projects:projects.filter(p=>p.developer.toLocaleLowerCase('ru').includes(q));const allowed=new Set(filtered.map(p=>String(p.id)));selectedProjectIds=selectedProjectIds.filter(id=>allowed.has(id));$('projectMultiPanel').innerHTML=filtered.length?filtered.map(p=>`<button type="button" class="multi-option ${selectedProjectIds.includes(String(p.id))?'selected':''}" data-project-id="${p.id}">${p.name}</button>`).join(''):'<div class="multi-empty">Нет проектов</div>';$('projectMultiPanel').querySelectorAll('[data-project-id]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();const id=String(el.dataset.projectId);selectedProjectIds=selectedProjectIds.includes(id)?selectedProjectIds.filter(x=>x!==id):[...selectedProjectIds,id];el.classList.toggle('selected',selectedProjectIds.includes(id));syncProjectButton()}));syncProjectButton()}
+
+function fillSelect(select,values,placeholder='—'){const cur=select.value;select.innerHTML=`<option value="">${placeholder}</option>`+[...new Set(values.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ru',{numeric:true})).map(v=>`<option value="${String(v).replaceAll('"','&quot;')}">${v}</option>`).join('');if([...select.options].some(o=>o.value===cur))select.value=cur}
+function populateFilters(){
+ const devs=projects.map(p=>p.developer).filter(Boolean);$('developerList').innerHTML=[...new Set(devs)].sort((a,b)=>a.localeCompare(b,'ru')).map(d=>`<option value="${d}"></option>`).join('');syncProjectOptions();
+ fillSelect($('dataDeveloper'),devs);syncDataProjects();
+ fillSelect($('regionFilter'),projects.map(p=>p.region));fillSelect($('cityFilter'),projects.map(p=>p.city));fillSelect($('regionDeveloper'),devs);fillSelect($('regionProject'),projects.map(p=>p.name));fillSelect($('statusFilter'),projects.map(p=>p.status));fillSelect($('classFilter'),projects.map(p=>p.klass));
+ const quarters=projects.map(p=>p.deadline).filter(Boolean);fillSelect($('deadlineFrom'),quarters);fillSelect($('deadlineTo'),quarters);
+}
+function syncDataProjects(){const dev=$('dataDeveloper').value;const arr=dev?projects.filter(p=>p.developer===dev):projects;fillSelect($('dataProject'),arr.map(p=>p.name));$('dataProject').querySelectorAll('option').forEach(o=>{const p=projects.find(x=>x.name===o.value);if(p)o.value=p.id})}
+
+function syncPeriodButtons(){$('fromBtn').textContent=displayMonthValue(fromValue);$('toBtn').textContent=displayMonthValue(toValue)}
+function syncRegionPeriod(){$('regionFromBtn').textContent=displayMonthValue(regionFromValue);$('regionToBtn').textContent=displayMonthValue(regionToValue)}
+function monthAllowed(y,m){if(!minMonth||!maxMonth)return false;const k=y*100+m;return k>=keyFromMonthValue(minMonth)&&k<=keyFromMonthValue(maxMonth)}
+function openPicker(kind){activePicker=kind;let raw=kind==='projectFrom'?fromValue:kind==='projectTo'?toValue:kind==='regionFrom'?regionFromValue:regionToValue;const cur=raw?parseMonthValue(raw):parseMonthValue(maxMonth);pickerYear=cur.year;$('pickerTitle').textContent=(kind.endsWith('From')?'Период с':'Период по');renderPicker();$('pickerBackdrop').classList.add('open')}
+function renderPicker(){if(!pickerYear)return;$('yearValue').textContent=pickerYear;const raw=activePicker==='projectFrom'?fromValue:activePicker==='projectTo'?toValue:activePicker==='regionFrom'?regionFromValue:regionToValue;const cur=raw?parseMonthValue(raw):{year:pickerYear,month:0};$('monthGrid').innerHTML=monthNames.slice(1).map((name,i)=>{const m=i+1,a=monthAllowed(pickerYear,m),s=cur.year===pickerYear&&cur.month===m;return `<button type="button" class="month-option ${s?'selected':''} ${a?'':'disabled'}" data-month="${m}" ${a?'':'disabled'}>${name.slice(0,3)}</button>`}).join('');$('monthGrid').querySelectorAll('.month-option:not(.disabled)').forEach(b=>b.addEventListener('click',()=>{const v=`${pickerYear}-${String(b.dataset.month).padStart(2,'0')}`;if(activePicker==='projectFrom')fromValue=v;else if(activePicker==='projectTo')toValue=v;else if(activePicker==='regionFrom')regionFromValue=v;else regionToValue=v;syncPeriodButtons();syncRegionPeriod();closePicker()}));$('yearPrev').disabled=pickerYear<=parseMonthValue(minMonth).year;$('yearNext').disabled=pickerYear>=parseMonthValue(maxMonth).year}
+function closePicker(){$('pickerBackdrop').classList.remove('open')}
+
+function makeMultiChart(id,type,labels,series,tooltipFormatter,axisFormatter,extra={}){if(charts[id])charts[id].destroy();const palette=['#36516f','#7b8794','#9b6f65','#657a68','#786f91','#9a865e'];const datasets=series.map((s,i)=>({label:s.name,data:s.data,borderColor:palette[i%palette.length],backgroundColor:type==='bar'?palette[i%palette.length]:'transparent',pointBackgroundColor:palette[i%palette.length],pointBorderColor:palette[i%palette.length],borderWidth:2,pointRadius:type==='line'?3.5:2,tension:.25,fill:false,spanGaps:true}));const yTicks={callback:v=>axisFormatter(v)};if(extra.stepSize)yTicks.stepSize=extra.stepSize;charts[id]=new Chart($(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom'},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${tooltipFormatter(c.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxRotation:0}},y:{grid:{color:'#edf1f5'},ticks:yTicks,beginAtZero:!!extra.beginAtZero}}}})}
+
+function clearProjectResults(){ $('kpis').innerHTML='';$('projectPassportCard').style.display='none';$('projectUtpCard').style.display='none';$('projectCharts').style.display='none';$('topBadge').textContent='';$('insight').className='empty-report card';$('insight').innerHTML='Выберите один или несколько проектов и период, затем нажмите «Показать отчёт».';Object.keys(charts).filter(k=>!k.startsWith('r')).forEach(k=>{charts[k]?.destroy();delete charts[k]}) }
+function updateProject(){if(!selectedProjectIds.length||!fromValue||!toValue){clearProjectResults();return}let fk=keyFromMonthValue(fromValue),tk=keyFromMonthValue(toValue);if(fk>tk){[fromValue,toValue]=[toValue,fromValue];syncPeriodButtons();fk=keyFromMonthValue(fromValue);tk=keyFromMonthValue(toValue)}const ps=projects.filter(p=>selectedProjectIds.includes(String(p.id))),single=ps.length===1?ps[0]:null;$('projectPassportCard').style.display=single?'block':'none';$('projectUtpCard').style.display=single?'block':'none';$('projectCharts').style.display='grid';if(single){$('projectName').textContent=single.name;$('passport').innerHTML=passportItemsFor(single).map(x=>`<div class="pitem"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');renderKeyValues($('utp'),Object.entries(utpByProject[single.id]||{}))}$('topBadge').textContent=single?`${single.name} · ID ${single.id}`:`Выбрано проектов: ${ps.length}`;const per=ps.map(p=>({project:p,rows:projectPdRows(p.id).filter(r=>r.key>=fk&&r.key<=tk&&r.units!==null)})),all=per.flatMap(x=>x.rows);if(!all.length){$('kpis').innerHTML='';$('insight').innerHTML='Нет данных за выбранный период.';$('projectCharts').style.display='none';return}const sum=k=>all.reduce((s,r)=>s+(r[k]||0),0),units=sum('units'),area=sum('area'),value=sum('value'),avg=area?value/area:null,deal=units?area/units:null,totalUnits=ps.reduce((s,p)=>s+(p.totalUnits||0),0),totalArea=ps.reduce((s,p)=>s+(p.totalArea||0),0),paceU=totalUnits?units/totalUnits*100:null,paceA=totalArea?area/totalArea*100:null;let cumU=null,cumA=null;if(per.every(x=>x.rows.length)){const ends=per.map(x=>x.rows[x.rows.length-1]);cumU=totalUnits?ends.reduce((s,r)=>s+(r.cumUnits||0),0)/totalUnits*100:null;cumA=totalArea?ends.reduce((s,r)=>s+(r.cumArea||0),0)/totalArea*100:null}const cards=[['Продано лотов',fmt0(units)+' шт.','за выбранный период'],['Проданная площадь',fmt2(area)+' м²','за выбранный период'],['Объём реализации',money(value),'за выбранный период'],['Средняя цена, ₽/м²',money(avg)+'/м²','взвешенная по площади'],['Средняя площадь в сделке',fmt2(deal)+' м²','площадь / количество'],['Темп продаж, шт.',pct(paceU),'за выбранный период'],['Темп продаж, м²',pct(paceA),'за выбранный период'],['Реализовано накопительно',pct(cumU)+' шт. · '+pct(cumA)+' м²','на конец периода']];$('kpis').innerHTML=cards.map(c=>`<div class="kpi card"><div class="k">${c[0]}</div><div class="v">${c[1]}</div><div class="hint">${c[2]}</div></div>`).join('');$('insight').innerHTML=ps.length>1?`За период <strong>${displayMonthValue(fromValue)} — ${displayMonthValue(toValue)}</strong> суммарно по ${ps.length} проектам: ${fmt0(units)} шт., ${fmt2(area)} м², ${money(value)}. На графиках показатели разделены по проектам / очередям.`:`За период <strong>${displayMonthValue(fromValue)} — ${displayMonthValue(toValue)}</strong>: ${fmt0(units)} шт., ${fmt2(area)} м², ${money(value)}.`;const keys=[...new Set(all.map(r=>r.key))].sort((a,b)=>a-b),labels=keys.map(k=>`${short[k%100]} ${String(Math.floor(k/100)).slice(2)}`),series=m=>per.map(x=>({name:x.project.name,data:keys.map(k=>x.rows.find(z=>z.key===k)?.[m]??null)}));makeMultiChart('unitsChart','bar',labels,series('units'),v=>fmt0(v)+' шт.',fmt0);makeMultiChart('areaChart','bar',labels,series('area'),v=>fmt2(v)+' м²',fmt1);makeMultiChart('valueChart','bar',labels,series('value'),money,compactMoney);makeMultiChart('priceChart','line',labels,series('price'),v=>money(v)+'/м²',compactPrice,{stepSize:50000,beginAtZero:true})}
+
+function renderProjectCard(){const id=$('dataProject').value;if(!id){['dataPassportCard','dataUtpCard','dataCharacteristicsCard'].forEach(x=>$(x).style.display='none');return}const p=projects.find(x=>String(x.id)===String(id));if(!p)return;['dataPassportCard','dataUtpCard','dataCharacteristicsCard'].forEach(x=>$(x).style.display='block');$('dataProjectName').textContent=p.name;$('dataPassport').innerHTML=passportItemsFor(p).map(x=>`<div class="pitem"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');renderKeyValues($('dataUtp'),Object.entries(utpByProject[id]||{}));const chars=characteristicLabels.map(k=>[k,(characteristicsByProject[id]||{})[k]??'—']);renderKeyValues($('dataCharacteristics'),chars)}
+
+function deadlineKey(s){const m=String(s||'').match(/([1-4])\D+(20\d{2})/i);return m?Number(m[2])*10+Number(m[1]):null}
+function updateRegion(){if(!regionFromValue||!regionToValue){$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Выберите период и нажмите «Показать отчёт».';$('regionKpis').innerHTML='';$('regionCharts').style.display='none';return}let fk=keyFromMonthValue(regionFromValue),tk=keyFromMonthValue(regionToValue);if(fk>tk){[regionFromValue,regionToValue]=[regionToValue,regionFromValue];syncRegionPeriod();fk=keyFromMonthValue(regionFromValue);tk=keyFromMonthValue(regionToValue)}let ps=projects.filter(p=>(!$('regionFilter').value||p.region===$('regionFilter').value)&&(!$('cityFilter').value||p.city===$('cityFilter').value)&&(!$('regionDeveloper').value||p.developer===$('regionDeveloper').value)&&(!$('regionProject').value||p.name===$('regionProject').value)&&(!$('statusFilter').value||p.status===$('statusFilter').value)&&(!$('classFilter').value||p.klass===$('classFilter').value));const dFrom=deadlineKey($('deadlineFrom').value),dTo=deadlineKey($('deadlineTo').value);if(dFrom)ps=ps.filter(p=>deadlineKey(p.deadline)!=null&&deadlineKey(p.deadline)>=dFrom);if(dTo)ps=ps.filter(p=>deadlineKey(p.deadline)!=null&&deadlineKey(p.deadline)<=dTo);const ids=new Set(ps.map(p=>String(p.id)));const rows=pd.filter(r=>ids.has(String(r.projectId))&&r.key>=fk&&r.key<=tk&&r.units!==null);if(!rows.length){$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Нет данных по выбранным фильтрам.';$('regionKpis').innerHTML='';$('regionCharts').style.display='none';return}$('regionPlaceholder').style.display='none';const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0),units=sum('units'),area=sum('area'),value=sum('value'),avg=area?value/area:null,deal=units?area/units:null;$('regionKpis').innerHTML=[['Продано лотов',fmt0(units)+' шт.'],['Проданная площадь',fmt2(area)+' м²'],['Объём реализации',money(value)],['Средняя цена, ₽/м²',money(avg)+'/м²'],['Средняя площадь в сделке',fmt2(deal)+' м²']].map(x=>`<div class="kpi card"><div class="k">${x[0]}</div><div class="v">${x[1]}</div><div class="hint">за выбранный период</div></div>`).join('');$('regionCharts').style.display='grid';const keys=[...new Set(rows.map(r=>r.key))].sort((a,b)=>a-b),labels=keys.map(k=>`${short[k%100]} ${String(Math.floor(k/100)).slice(2)}`),per=ps.map(p=>({project:p,rows:rows.filter(r=>String(r.projectId)===String(p.id))})),series=m=>per.filter(x=>x.rows.length).map(x=>({name:x.project.name,data:keys.map(k=>x.rows.find(z=>z.key===k)?.[m]??null)}));makeMultiChart('rUnitsChart','bar',labels,series('units'),v=>fmt0(v)+' шт.',fmt0);makeMultiChart('rAreaChart','bar',labels,series('area'),v=>fmt2(v)+' м²',fmt1);makeMultiChart('rValueChart','bar',labels,series('value'),money,compactMoney);makeMultiChart('rPriceChart','line',labels,series('price'),v=>money(v)+'/м²',compactPrice,{stepSize:50000,beginAtZero:true})}
+
+function bindEvents(){
+ document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$(btn.dataset.view).classList.add('active');const v=btn.dataset.view;$('pageTitle').textContent=v==='regionView'?'Аналитика региона':v==='dataView'?'Данные о проекте':'Аналитика по проектам';$('topBadge').textContent=''}));
+ $('projectMultiBtn').addEventListener('click',e=>{e.stopPropagation();$('projectMultiPanel').classList.toggle('open')});document.addEventListener('click',e=>{if(!$('projectMultiPanel').contains(e.target)&&e.target!==$('projectMultiBtn'))$('projectMultiPanel').classList.remove('open')});$('developerFilter').addEventListener('input',syncProjectOptions);$('developerFilter').addEventListener('change',syncProjectOptions);
+ $('fromBtn').addEventListener('click',()=>openPicker('projectFrom'));$('toBtn').addEventListener('click',()=>openPicker('projectTo'));$('regionFromBtn').addEventListener('click',()=>openPicker('regionFrom'));$('regionToBtn').addEventListener('click',()=>openPicker('regionTo'));$('pickerClose').addEventListener('click',closePicker);$('pickerBackdrop').addEventListener('click',e=>{if(e.target===$('pickerBackdrop'))closePicker()});$('yearPrev').addEventListener('click',()=>{if(pickerYear>parseMonthValue(minMonth).year){pickerYear--;renderPicker()}});$('yearNext').addEventListener('click',()=>{if(pickerYear<parseMonthValue(maxMonth).year){pickerYear++;renderPicker()}});
+ $('reset').addEventListener('click',()=>{fromValue=minMonth;toValue=maxMonth;syncPeriodButtons()});$('projectClear').addEventListener('click',()=>{$('developerFilter').value='';selectedProjectIds=[];syncProjectOptions();fromValue=toValue=null;syncPeriodButtons();clearProjectResults()});$('apply').addEventListener('click',updateProject);
+ $('dataDeveloper').addEventListener('change',()=>{syncDataProjects();renderProjectCard()});$('dataProject').addEventListener('change',()=>{});$('dataApply').addEventListener('click',renderProjectCard);$('dataClear').addEventListener('click',()=>{$('dataDeveloper').value='';syncDataProjects();$('dataProject').value='';renderProjectCard()});
+ $('regionApply').addEventListener('click',updateRegion);$('regionReset').addEventListener('click',()=>{['regionFilter','cityFilter','regionDeveloper','regionProject','statusFilter','classFilter','deadlineFrom','deadlineTo'].forEach(id=>$(id).value='');regionFromValue=regionToValue=null;syncRegionPeriod();$('regionKpis').innerHTML='';$('regionCharts').style.display='none';$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Выберите параметры и нажмите «Показать отчёт».';Object.keys(charts).filter(k=>k.startsWith('r')).forEach(k=>{charts[k]?.destroy();delete charts[k]})});
+}
+
+async function start(){
+ // Интерфейс и кнопки инициализируются сразу, независимо от доступности Google Sheets.
+ bindEvents();
+ syncPeriodButtons();
+ syncRegionPeriod();
+ clearProjectResults();
+ $('regionPlaceholder').textContent='Выберите параметры и нажмите «Показать отчёт».';
+ $('topBadge').textContent='Загрузка данных…';
+ try{
+  const [pr,pdr,u,c]=await Promise.all([loadGvizSheet(SHEETS.projects),loadGvizSheet(SHEETS.pd),loadGvizSheet(SHEETS.utp),loadGvizSheet(SHEETS.characteristics)]);
+  buildData(pr,pdr,u,c);
+  populateFilters();
+  $('topBadge').textContent='Данные загружены';
+  setTimeout(()=>{if($('topBadge').textContent==='Данные загружены')$('topBadge').textContent=''},1800);
+ }catch(err){
+  console.error(err);
+  $('topBadge').textContent='Ошибка загрузки';
+  $('insight').className='empty-report card';
+  $('insight').innerHTML=`Не удалось загрузить данные из Google Sheets. Проверьте, что таблица доступна по ссылке или опубликована в интернете.<br><small>${err.message}</small>`;
+  $('regionPlaceholder').textContent='Не удалось загрузить данные из Google Sheets.';
+ }
+}
+start();
+</script>
+</body>
+</html>
