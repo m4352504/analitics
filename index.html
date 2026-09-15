@@ -176,25 +176,15 @@ const parseMonthValue=v=>{const [year,month]=v.split('-').map(Number);return {ye
 const nval=v=>{if(v===null||v===undefined||v==='')return null;if(typeof v==='number')return v;const s=String(v).replace(/\s/g,'').replace(',','.').replace(/[^0-9.\-]/g,'');const n=Number(s);return Number.isFinite(n)?n:null};
 const sval=v=>v==null?'':String(v).trim();
 
-async function loadGvizSheet(sheetName){
-  // Google GViz через JSONP: <script> не блокируется CORS, в отличие от fetch с GitHub Pages.
-  const callbackName='__gviz_'+Date.now()+'_'+Math.random().toString(36).slice(2);
-  const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=responseHandler:${callbackName}&sheet=${encodeURIComponent(sheetName)}&headers=1&_=${Date.now()}`;
-  const data=await new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    let timer;
-    const cleanup=()=>{clearTimeout(timer);script.remove();try{delete window[callbackName]}catch(e){window[callbackName]=undefined}};
-    window[callbackName]=(payload)=>{cleanup();resolve(payload)};
-    script.onerror=()=>{cleanup();reject(new Error(`Не удалось прочитать лист «${sheetName}»`))};
-    timer=setTimeout(()=>{cleanup();reject(new Error(`Превышено время загрузки листа «${sheetName}»`))},15000);
-    script.src=url;
-    document.head.appendChild(script);
-  });
-  if(!data||data.status==='error') throw new Error(data?.errors?.[0]?.detailed_message||`Ошибка чтения «${sheetName}»`);
-  const headers=data.table.cols.map((c,i)=>sval(c.label)||`col_${i+1}`);
-  return data.table.rows.map(r=>{
-    const obj={}; headers.forEach((h,i)=>{const c=r.c?.[i];obj[h]=c?(c.f??c.v??''):''}); return obj;
-  }).filter(row=>Object.values(row).some(v=>sval(v)!==''));
+const API_URL='https://script.google.com/macros/s/AKfycbyeFZj0lPqEtJHpnPHPWldkrC2sMkf2_zFS0D8hbCSu3VBlDWwg7KBzVMoX3EAo4EJkEg/exec';
+
+async function loadApiData(){
+  const url=API_URL+(API_URL.includes('?')?'&':'?')+'_='+Date.now();
+  const res=await fetch(url,{method:'GET',cache:'no-store',redirect:'follow'});
+  if(!res.ok) throw new Error(`API вернул HTTP ${res.status}`);
+  const data=await res.json();
+  if(!data||!Array.isArray(data.projects)||!Array.isArray(data.pd)) throw new Error('API вернул данные неожиданного формата');
+  return data;
 }
 
 function first(row,names){for(const n of names){if(Object.prototype.hasOwnProperty.call(row,n))return row[n]}return ''}
@@ -262,17 +252,17 @@ async function start(){
  $('regionPlaceholder').textContent='Выберите параметры и нажмите «Показать отчёт».';
  $('topBadge').textContent='Загрузка данных…';
  try{
-  const [pr,pdr,u,c]=await Promise.all([loadGvizSheet(SHEETS.projects),loadGvizSheet(SHEETS.pd),loadGvizSheet(SHEETS.utp),loadGvizSheet(SHEETS.characteristics)]);
-  buildData(pr,pdr,u,c);
+  const data=await loadApiData();
+  buildData(data.projects||[],data.pd||[],data.utp||[],data.characteristics||[]);
   populateFilters();
-  $('topBadge').textContent='Данные загружены';
-  setTimeout(()=>{if($('topBadge').textContent==='Данные загружены')$('topBadge').textContent=''},1800);
+  const updated=data.updatedAt?new Date(data.updatedAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'';
+  $('topBadge').textContent=`Данные загружены · ${projects.length} проектов${updated?' · '+updated:''}`;
  }catch(err){
   console.error(err);
   $('topBadge').textContent='Ошибка загрузки';
   $('insight').className='empty-report card';
-  $('insight').innerHTML=`Не удалось загрузить данные из Google Sheets. Проверьте, что таблица доступна по ссылке или опубликована в интернете.<br><small>${err.message}</small>`;
-  $('regionPlaceholder').textContent='Не удалось загрузить данные из Google Sheets.';
+  $('insight').innerHTML=`Не удалось загрузить данные через API Google Apps Script.<br><small>${err.message}</small>`;
+  $('regionPlaceholder').textContent='Не удалось загрузить данные через API.';
  }
 }
 start();
