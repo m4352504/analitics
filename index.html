@@ -177,14 +177,20 @@ const nval=v=>{if(v===null||v===undefined||v==='')return null;if(typeof v==='num
 const sval=v=>v==null?'':String(v).trim();
 
 async function loadGvizSheet(sheetName){
-  const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&headers=1`;
-  const res=await fetch(url,{cache:'no-store'});
-  if(!res.ok) throw new Error(`Не удалось прочитать лист «${sheetName}» (${res.status})`);
-  const text=await res.text();
-  const start=text.indexOf('{'), end=text.lastIndexOf('}');
-  if(start<0||end<0) throw new Error(`Лист «${sheetName}» вернул неожиданный ответ`);
-  const data=JSON.parse(text.slice(start,end+1));
-  if(data.status==='error') throw new Error(data.errors?.[0]?.detailed_message||`Ошибка чтения «${sheetName}»`);
+  // Google GViz через JSONP: <script> не блокируется CORS, в отличие от fetch с GitHub Pages.
+  const callbackName='__gviz_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+  const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=responseHandler:${callbackName}&sheet=${encodeURIComponent(sheetName)}&headers=1&_=${Date.now()}`;
+  const data=await new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    let timer;
+    const cleanup=()=>{clearTimeout(timer);script.remove();try{delete window[callbackName]}catch(e){window[callbackName]=undefined}};
+    window[callbackName]=(payload)=>{cleanup();resolve(payload)};
+    script.onerror=()=>{cleanup();reject(new Error(`Не удалось прочитать лист «${sheetName}»`))};
+    timer=setTimeout(()=>{cleanup();reject(new Error(`Превышено время загрузки листа «${sheetName}»`))},15000);
+    script.src=url;
+    document.head.appendChild(script);
+  });
+  if(!data||data.status==='error') throw new Error(data?.errors?.[0]?.detailed_message||`Ошибка чтения «${sheetName}»`);
   const headers=data.table.cols.map((c,i)=>sval(c.label)||`col_${i+1}`);
   return data.table.rows.map(r=>{
     const obj={}; headers.forEach((h,i)=>{const c=r.c?.[i];obj[h]=c?(c.f??c.v??''):''}); return obj;
