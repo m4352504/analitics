@@ -39,7 +39,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,
 .field select,.field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:white;color:var(--text);font-size:14px;outline:none;height:42px}
 .field select:focus,.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,107,138,.10)}
 .field input::placeholder{color:#9aa5af}
-.project-multi{position:relative}.multi-button{width:100%;height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);padding:10px 36px 10px 12px;text-align:left;font-size:14px;cursor:pointer;position:relative}.multi-button:after{content:'⌄';position:absolute;right:12px;top:8px;color:var(--muted);font-size:18px}.multi-panel{display:none;position:absolute;z-index:30;left:0;right:0;top:48px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 35px rgba(25,40,55,.14);padding:8px;max-height:280px;overflow:auto}.multi-panel.open{display:block}.multi-option{display:block;width:100%;border:0;background:#fff;color:var(--text);text-align:left;padding:10px 11px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation}.multi-option:hover{background:#f4f6f8}.multi-option.selected{background:#e9eef4;color:var(--navy);font-weight:700}.multi-option.selected:after{content:'✓';float:right;font-weight:800}.multi-empty{padding:10px 11px;color:var(--muted);font-size:14px}
+.project-multi{position:relative}.multi-button{width:100%;height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);padding:10px 36px 10px 12px;text-align:left;font-size:14px;cursor:pointer;position:relative}.multi-button:after{content:'⌄';position:absolute;right:12px;top:8px;color:var(--muted);font-size:18px}.multi-panel{display:none;position:absolute;z-index:30;left:0;right:0;top:48px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 35px rgba(25,40,55,.14);padding:8px;max-height:280px;overflow:auto}.multi-panel.open{display:block}.multi-option{display:block;width:100%;border:0;background:#fff;color:var(--text);text-align:left;padding:10px 11px;border-radius:8px;font-size:14px;cursor:pointer;touch-action:manipulation}.multi-option:hover{background:#f4f6f8}.multi-option.selected{background:#e9eef4;color:var(--navy);font-weight:700}.multi-empty{padding:10px 11px;color:var(--muted);font-size:14px}
 .passport{padding:20px;margin-bottom:18px}.section-title{font-size:18px;font-weight:750;margin:0 0 14px}.project-name{font-size:24px;font-weight:760;color:var(--navy);margin-bottom:14px}
 .passport-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.pitem{border-top:1px solid var(--line);padding-top:10px}.pitem .k{font-size:12px;color:var(--muted);margin-bottom:4px}.pitem .v{font-size:14px;font-weight:600}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.kpi{padding:17px 18px}.kpi .k{font-size:12px;color:var(--muted);margin-bottom:8px}.kpi .v{font-size:25px;font-weight:780;color:var(--navy)}.kpi .hint{font-size:11px;color:var(--muted);margin-top:5px}.kpi.neg .v{color:var(--red)}
@@ -98,80 +98,43 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,
       <div class="field"><label>Регион</label><select id="regionFilter"><option value=""></option><option value="Крым">Крым</option></select></div>
       <div class="field"><label>Город / район</label><select id="cityFilter"><option value=""></option><option value="Ялта">Ялта</option></select></div>
       <div class="field"><label>Застройщик</label><input id="regionDeveloper" type="text" list="developerList" placeholder="" autocomplete="off"></div>
-      <div class="field"><label>Проект</label><select id="regionProject"><option value=""></option><option value="1">Новая Ливадия, 1 очередь</option><option value="2">КД Массандра парк</option><option value="3">Массандра парк</option></select></div>
-      <div class="field"><label>Статус помещений</label><select id="statusFilter"><option value=""></option><option>Квартиры</option><option>Апартаменты</option></select></div>
-      <div class="field"><label>Класс</label><select id="classFilter"><option value=""></option><option>Бизнес</option></select></div>
-      <div class="field"><label>Срок сдачи — с квартала</label><select id="deadlineFrom"><option value=""></option><option value="2027-4">IV кв. 2027</option></select></div>
-      <div class="field"><label>Срок сдачи — по квартал</label><select id="deadlineTo"><option value=""></option><option value="2027-4">IV кв. 2027</option></select></div>
+      <div class="field"><label>Проект</label><select id="regionProject"><option value=""></option></select></div>
+      <div class="field"><label>Статус</label><select id="regionStatus"><option value=""></option></select></div>
+      <div class="field"><label>Класс</label><select id="regionClass"><option value=""></option></select></div>
+      <div class="field"><label>Срок сдачи с</label><select id="deadlineFrom"><option value=""></option></select></div>
+      <div class="field"><label>Срок сдачи по</label><select id="deadlineTo"><option value=""></option></select></div>
       <div class="field"><label>Период с</label><button type="button" class="period-button" id="regionFromBtn">—</button></div>
       <div class="field"><label>Период по</label><button type="button" class="period-button" id="regionToBtn">—</button></div>
-      <button type="button" class="reset" id="regionReset">Очистить</button>
-      <button type="button" class="apply" id="regionApply">Показать отчёт</button>
+      <div class="region-actions"><button type="button" class="reset" id="regionClear">Очистить</button><button type="button" class="apply" id="regionApply">Показать отчёт</button></div>
     </div>
-    <div class="region-summary card"><div class="section-title">Аналитика региона</div><p>Фильтры работают как сегмент рынка: регион и город выбираются отдельно, а срок сдачи задаётся диапазоном кварталов.</p></div>
+    <div class="region-summary card" id="regionSummary" style="display:none"><div class="section-title">Аналитика региона</div><p>Модуль подготовлен под фильтры. Расчёты и графики добавим следующим этапом.</p></div>
     <div class="region-placeholder card" id="regionPlaceholder">Выберите параметры и нажмите «Показать отчёт».</div>
-    <div class="kpis" id="regionKpis"></div>
-    <div class="grid2" id="regionCharts" style="display:none">
-      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Продажи, шт.</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rUnitsChart"></canvas></div></div>
-      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Проданная площадь, м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rAreaChart"></canvas></div></div>
-      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Объём реализации, ₽</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rValueChart"></canvas></div></div>
-      <div class="chart-card card"><div class="chart-head"><div class="chart-title">Средняя реализованная цена, ₽/м²</div><div class="chart-note">за выбранный период</div></div><div class="chart-wrap"><canvas id="rPriceChart"></canvas></div></div>
-    </div>
   </div>
 
   <div class="view" id="dataView">
-    <div class="filters card data-filters">
-      <div class="field"><label>Застройщик</label><input id="dataDeveloper" type="text" list="developerList" placeholder="" autocomplete="off"></div>
+    <div class="region-filters data-filters card">
+      <div class="field"><label>Застройщик</label><input id="dataDeveloper" type="text" list="developerList" autocomplete="off"></div>
       <div class="field"><label>Проект</label><select id="dataProject"><option value=""></option></select></div>
-      <button type="button" class="reset" id="dataClear">Очистить</button>
-      <button type="button" class="apply" id="dataApply">Показать проект</button>
+      <div class="region-actions"><button type="button" class="reset" id="dataClear">Очистить</button><button type="button" class="apply" id="dataApply">Показать проект</button></div>
     </div>
-
-    <div class="passport card" id="dataPassportCard" style="display:none">
-      <div class="section-title">Паспорт проекта</div>
-      <div class="project-name" id="dataProjectName"></div>
-      <div class="passport-grid" id="dataPassport"></div>
-    </div>
-
-    <div class="utp card" id="dataUtpCard" style="display:none">
-      <div class="section-title">Наполнение проекта</div>
-      <div class="utp-grid" id="dataUtp"></div>
-    </div>
-
-    <div class="utp card" id="dataCharacteristicsCard" style="display:none">
-      <div class="section-title">Характеристики</div>
-      <div class="utp-grid" id="dataCharacteristics"></div>
+    <div id="dataEmpty" class="empty-report card">Выберите проект и нажмите «Показать проект».</div>
+    <div id="dataContent" style="display:none">
+      <div class="passport card"><div class="section-title">Паспорт проекта</div><div class="project-name" id="dataProjectName"></div><div class="passport-grid" id="dataPassport"></div></div>
+      <div class="utp card"><div class="section-title">Наполнение проекта</div><div class="utp-grid" id="dataUtp"></div></div>
+      <div class="utp card"><div class="section-title">Характеристики</div><div class="utp-grid" id="dataCharacteristics"></div></div>
     </div>
   </div>
 </div>
-<div class="picker-backdrop" id="pickerBackdrop" aria-hidden="true">
-  <div class="month-picker" role="dialog" aria-modal="true" aria-label="Выбор месяца">
-    <div class="picker-head"><div class="picker-title" id="pickerTitle">Выберите месяц</div><button type="button" class="picker-close" id="pickerClose" aria-label="Закрыть">×</button></div>
-    <div class="year-row"><button type="button" id="yearPrev" aria-label="Предыдущий год">‹</button><div class="year-value" id="yearValue"></div><button type="button" id="yearNext" aria-label="Следующий год">›</button></div>
-    <div class="month-grid" id="monthGrid"></div>
-  </div>
-</div>
+
+<div class="picker-backdrop" id="pickerBackdrop"><div class="month-picker"><div class="picker-head"><div class="picker-title" id="pickerTitle">Выберите месяц</div><button type="button" class="picker-close" id="pickerClose">×</button></div><div class="year-row"><button type="button" id="yearPrev">‹</button><div class="year-value" id="yearValue"></div><button type="button" id="yearNext">›</button></div><div class="month-grid" id="monthGrid"></div></div></div>
+
 <script>
-const SPREADSHEET_ID='1xyNJTWFV0JefcVWdW8t24ogecbbZ9ekjAyC4VXpeskI';
-const SHEETS={projects:'Проекты',pd:'ПД',utp:'УТП',characteristics:'Характеристики'};
-const months={Январь:1,Февраль:2,Март:3,Апрель:4,Май:5,Июнь:6,Июль:7,Август:8,Сентябрь:9,Октябрь:10,Ноябрь:11,Декабрь:12};
-const monthNames=['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const short=['','янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-let projects=[],pd=[],utpByProject={},characteristicsByProject={},characteristicLabels=[];
-let minMonth=null,maxMonth=null,fromValue=null,toValue=null,regionFromValue=null,regionToValue=null,activePicker='',pickerYear=null;
-let selectedProjectIds=[],charts={};
-
 const $=id=>document.getElementById(id);
-const fmt0=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n);
-const fmt1=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n);
-const fmt2=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-const money=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n)+' ₽';
-const pct=n=>n==null||Number.isNaN(n)?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(n)+'%';
-const compactMoney=n=>{const x=Number(n)||0,a=Math.abs(x),s=x<0?'-':'';if(a>=1e9)return s+(a/1e9).toLocaleString('ru-RU',{maximumFractionDigits:1})+' млрд ₽';if(a>=1e6)return s+(a/1e6).toLocaleString('ru-RU',{maximumFractionDigits:0})+' млн ₽';if(a>=1e3)return s+(a/1e3).toLocaleString('ru-RU',{maximumFractionDigits:0})+' тыс ₽';return s+fmt0(a)+' ₽'};
-const compactPrice=n=>{const x=Number(n)||0,a=Math.abs(x),s=x<0?'-':'';return a>=1000?s+(a/1000).toLocaleString('ru-RU',{maximumFractionDigits:0})+' т.р.':s+fmt0(a)+' ₽'};
-const keyFromMonthValue=v=>{if(!v)return null;const [y,m]=v.split('-').map(Number);return y*100+m};
-const monthValueFromKey=k=>`${Math.floor(k/100)}-${String(k%100).padStart(2,'0')}`;
-const displayMonthValue=v=>{if(!v)return '—';const [y,m]=v.split('-').map(Number);return `${monthNames[m]} ${y}`};
+const months={Январь:1,Февраль:2,Март:3,Апрель:4,Май:5,Июнь:6,Июль:7,Август:8,Сентябрь:9,Октябрь:10,Ноябрь:11,Декабрь:12};
+const monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const fmt0=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}),fmt1=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}),fmt2=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2});
+const money=v=>`${fmt0.format(v)} ₽`,area=v=>`${fmt2.format(v)} м²`,pct=v=>`${fmt1.format(v)}%`;
+const monthKey=(y,m)=>y*100+m;
 const parseMonthValue=v=>{const [year,month]=v.split('-').map(Number);return {year,month}};
 const nval=v=>{if(v===null||v===undefined||v==='')return null;if(typeof v==='number')return v;const s=String(v).replace(/\s/g,'').replace(',','.').replace(/[^0-9.\-]/g,'');const n=Number(s);return Number.isFinite(n)?n:null};
 const sval=v=>v==null?'':String(v).trim();
@@ -179,15 +142,27 @@ const sval=v=>v==null?'':String(v).trim();
 const API_URL='https://script.google.com/macros/s/AKfycbyeFZj0lPqEtJHpnPHPWldkrC2sMkf2_zFS0D8hbCSu3VBlDWwg7KBzVMoX3EAo4EJkEg/exec';
 
 async function loadApiData(){
-  const url=API_URL+(API_URL.includes('?')?'&':'?')+'_='+Date.now();
-  const res=await fetch(url,{method:'GET',cache:'no-store',redirect:'follow'});
-  if(!res.ok) throw new Error(`API вернул HTTP ${res.status}`);
-  const data=await res.json();
-  if(!data||!Array.isArray(data.projects)||!Array.isArray(data.pd)) throw new Error('API вернул данные неожиданного формата');
-  return data;
+  return new Promise((resolve,reject)=>{
+    const callback='__analyticsApi_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const script=document.createElement('script');
+    let timer=null;
+    const cleanup=()=>{if(timer)clearTimeout(timer);script.remove();try{delete window[callback]}catch(e){window[callback]=undefined}};
+    window[callback]=(data)=>{
+      cleanup();
+      if(!data||data.ok===false){reject(new Error(data?.error||'API вернул ошибку'));return;}
+      if(!Array.isArray(data.projects)||!Array.isArray(data.pd)){reject(new Error('API вернул данные неожиданного формата'));return;}
+      resolve(data);
+    };
+    script.onerror=()=>{cleanup();reject(new Error('Не удалось получить ответ Apps Script'))};
+    timer=setTimeout(()=>{cleanup();reject(new Error('Apps Script не ответил за 20 секунд'))},20000);
+    const sep=API_URL.includes('?')?'&':'?';
+    script.src=API_URL+sep+'callback='+encodeURIComponent(callback)+'&_='+Date.now();
+    document.head.appendChild(script);
+  });
 }
 
 function first(row,names){for(const n of names){if(Object.prototype.hasOwnProperty.call(row,n))return row[n]}return ''}
+let projects=[],pd=[],utpByProject={},characteristicsByProject={},characteristicLabels=[];
 function buildData(projectRows,pdRows,utpRows,charRows){
   projects=projectRows.map(r=>({
     id:sval(first(r,['ID проекта','ID'])),name:sval(first(r,['Название','Проект'])),developer:sval(first(r,['Застройщик'])),region:sval(first(r,['Регион'])),city:sval(first(r,['Город / район','Город'])),address:sval(first(r,['Адрес'])),status:sval(first(r,['Статус помещений'])),klass:sval(first(r,['Класс'])),deadline:sval(first(r,['Срок сдачи'])),totalUnits:nval(first(r,['Всего помещений','Общее количество квартир / апартаментов'])),totalArea:nval(first(r,['Общая продаваемая площадь, м²','Общая продаваемая площадь','Продаваемая площадь'])),finish:sval(first(r,['Отделка']))
@@ -198,74 +173,72 @@ function buildData(projectRows,pdRows,utpRows,charRows){
   pd=pdRows.map(r=>{const month=sval(first(r,['Период месяц','Месяц'])),year=nval(first(r,['Период год','Год']));return {projectId:sval(first(r,['ID проекта','ID'])),month,year,pdDate:sval(first(r,['Дата ПД'])),cumUnits:nval(first(r,['Продано накопитель шт','Продано накопительно шт','Продано накопительно, шт'])),cumArea:nval(first(r,['Продано накопительно кв.м.','Продано накопительно кв.м','Продано накопительно, м²'])),cumValue:nval(first(r,['Реализовано накопительно руб','Реализовано накопительно, ₽'])) ,key:year&&months[month]?year*100+months[month]:null}}).filter(r=>r.projectId&&r.key);
   const groups=new Map();pd.forEach(r=>{if(!groups.has(r.projectId))groups.set(r.projectId,[]);groups.get(r.projectId).push(r)});
   groups.forEach(rows=>{rows.sort((a,b)=>a.key-b.key);rows.forEach((r,i)=>{const p=rows[i-1];r.units=i&&r.cumUnits!=null&&p.cumUnits!=null?r.cumUnits-p.cumUnits:null;r.area=i&&r.cumArea!=null&&p.cumArea!=null?r.cumArea-p.cumArea:null;r.value=i&&r.cumValue!=null&&p.cumValue!=null?r.cumValue-p.cumValue:null;r.price=i?(r.area!==0&&r.area!=null&&r.value!=null?r.value/r.area:(r.area===0&&r.value===0?0:null)):null})});
-  pd.sort((a,b)=>a.key-b.key); if(pd.length){minMonth=monthValueFromKey(Math.min(...pd.map(r=>r.key)));maxMonth=monthValueFromKey(Math.max(...pd.map(r=>r.key)))}
 }
 
-function passportItemsFor(p){return [['Застройщик',p.developer||'—'],['Регион',p.region||'—'],['Город / район',p.city||'—'],['Адрес',p.address||'—'],['Статус помещений',p.status||'—'],['Класс',p.klass||'—'],['Срок сдачи',p.deadline||'—'],['Отделка',p.finish||'—'],['Всего помещений',p.totalUnits==null?'—':fmt0(p.totalUnits)],['Общая продаваемая площадь',p.totalArea==null?'—':fmt1(p.totalArea)+' м²']]}
-function renderKeyValues(target,entries,empty='Нет заполненных данных'){target.innerHTML=entries.length?entries.map(([k,v])=>`<div class="uitem"><div class="k">${k}</div><div class="v">${v}</div></div>`).join(''):`<div class="uitem"><div class="v">${empty}</div></div>`}
-function projectPdRows(id){return pd.filter(r=>String(r.projectId)===String(id))}
-
-function syncProjectButton(){if(!selectedProjectIds.length)$('projectMultiBtn').textContent='—';else if(selectedProjectIds.length===1){const p=projects.find(x=>String(x.id)===selectedProjectIds[0]);$('projectMultiBtn').textContent=p?p.name:'1 проект'}else $('projectMultiBtn').textContent=`Выбрано проектов: ${selectedProjectIds.length}`}
-function syncProjectOptions(){const q=$('developerFilter').value.trim().toLocaleLowerCase('ru');const filtered=!q?projects:projects.filter(p=>p.developer.toLocaleLowerCase('ru').includes(q));const allowed=new Set(filtered.map(p=>String(p.id)));selectedProjectIds=selectedProjectIds.filter(id=>allowed.has(id));$('projectMultiPanel').innerHTML=filtered.length?filtered.map(p=>`<button type="button" class="multi-option ${selectedProjectIds.includes(String(p.id))?'selected':''}" data-project-id="${p.id}">${p.name}</button>`).join(''):'<div class="multi-empty">Нет проектов</div>';$('projectMultiPanel').querySelectorAll('[data-project-id]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();const id=String(el.dataset.projectId);selectedProjectIds=selectedProjectIds.includes(id)?selectedProjectIds.filter(x=>x!==id):[...selectedProjectIds,id];el.classList.toggle('selected',selectedProjectIds.includes(id));syncProjectButton()}));syncProjectButton()}
-
-function fillSelect(select,values,placeholder='—'){const cur=select.value;select.innerHTML=`<option value="">${placeholder}</option>`+[...new Set(values.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ru',{numeric:true})).map(v=>`<option value="${String(v).replaceAll('"','&quot;')}">${v}</option>`).join('');if([...select.options].some(o=>o.value===cur))select.value=cur}
+let selectedProjectIds=new Set(),fromValue='',toValue='',regionFromValue='',regionToValue='',charts={};
+let minMonth=null,maxMonth=null,pickerTarget=null,pickerYear=new Date().getFullYear();
+function optionHtml(v,t=v){return `<option value="${String(v).replace(/"/g,'&quot;')}">${t}</option>`}
 function populateFilters(){
- const devs=projects.map(p=>p.developer).filter(Boolean);$('developerList').innerHTML=[...new Set(devs)].sort((a,b)=>a.localeCompare(b,'ru')).map(d=>`<option value="${d}"></option>`).join('');syncProjectOptions();
- fillSelect($('dataDeveloper'),devs);syncDataProjects();
- fillSelect($('regionFilter'),projects.map(p=>p.region));fillSelect($('cityFilter'),projects.map(p=>p.city));fillSelect($('regionDeveloper'),devs);fillSelect($('regionProject'),projects.map(p=>p.name));fillSelect($('statusFilter'),projects.map(p=>p.status));fillSelect($('classFilter'),projects.map(p=>p.klass));
- const quarters=projects.map(p=>p.deadline).filter(Boolean);fillSelect($('deadlineFrom'),quarters);fillSelect($('deadlineTo'),quarters);
+  const devs=[...new Set(projects.map(p=>p.developer).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));$('developerList').innerHTML=devs.map(d=>optionHtml(d)).join('');
+  const regions=[...new Set(projects.map(p=>p.region).filter(Boolean))].sort(),cities=[...new Set(projects.map(p=>p.city).filter(Boolean))].sort(),statuses=[...new Set(projects.map(p=>p.status).filter(Boolean))].sort(),classes=[...new Set(projects.map(p=>p.klass).filter(Boolean))].sort();
+  $('regionFilter').innerHTML='<option value=""></option>'+regions.map(x=>optionHtml(x)).join('');$('cityFilter').innerHTML='<option value=""></option>'+cities.map(x=>optionHtml(x)).join('');$('regionStatus').innerHTML='<option value=""></option>'+statuses.map(x=>optionHtml(x)).join('');$('regionClass').innerHTML='<option value=""></option>'+classes.map(x=>optionHtml(x)).join('');
+  const deadlines=[...new Set(projects.map(p=>p.deadline).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));$('deadlineFrom').innerHTML='<option value=""></option>'+deadlines.map(x=>optionHtml(x)).join('');$('deadlineTo').innerHTML='<option value=""></option>'+deadlines.map(x=>optionHtml(x)).join('');
+  refreshProjectMulti();refreshRegionProject();refreshDataProject();
+  const keys=pd.map(r=>r.key).filter(Boolean);if(keys.length){const min=Math.min(...keys),max=Math.max(...keys);minMonth={year:Math.floor(min/100),month:min%100};maxMonth={year:Math.floor(max/100),month:max%100};}
 }
-function syncDataProjects(){const dev=$('dataDeveloper').value;const arr=dev?projects.filter(p=>p.developer===dev):projects;fillSelect($('dataProject'),arr.map(p=>p.name));$('dataProject').querySelectorAll('option').forEach(o=>{const p=projects.find(x=>x.name===o.value);if(p)o.value=p.id})}
+function projectCandidates(){const dev=$('developerFilter').value.trim();return projects.filter(p=>!dev||p.developer===dev)}
+function refreshProjectMulti(){const list=projectCandidates();$('projectMultiPanel').innerHTML=list.length?list.map(p=>`<button type="button" class="multi-option ${selectedProjectIds.has(p.id)?'selected':''}" data-id="${p.id}">${p.name}</button>`).join(''):'<div class="multi-empty">Нет проектов</div>';updateMultiButton()}
+function updateMultiButton(){const names=projects.filter(p=>selectedProjectIds.has(p.id)).map(p=>p.name);$('projectMultiBtn').textContent=names.length===0?'—':names.length===1?names[0]:`Выбрано: ${names.length}`}
+function refreshRegionProject(){const dev=$('regionDeveloper').value.trim(),region=$('regionFilter').value,city=$('cityFilter').value;const list=projects.filter(p=>(!dev||p.developer===dev)&&(!region||p.region===region)&&(!city||p.city===city));const cur=$('regionProject').value;$('regionProject').innerHTML='<option value=""></option>'+list.map(p=>optionHtml(p.id,p.name)).join('');if(list.some(p=>p.id===cur))$('regionProject').value=cur}
+function refreshDataProject(){const dev=$('dataDeveloper').value.trim();const list=projects.filter(p=>!dev||p.developer===dev);const cur=$('dataProject').value;$('dataProject').innerHTML='<option value=""></option>'+list.map(p=>optionHtml(p.id,p.name)).join('');if(list.some(p=>p.id===cur))$('dataProject').value=cur}
 
-function syncPeriodButtons(){$('fromBtn').textContent=displayMonthValue(fromValue);$('toBtn').textContent=displayMonthValue(toValue)}
-function syncRegionPeriod(){$('regionFromBtn').textContent=displayMonthValue(regionFromValue);$('regionToBtn').textContent=displayMonthValue(regionToValue)}
-function monthAllowed(y,m){if(!minMonth||!maxMonth)return false;const k=y*100+m;return k>=keyFromMonthValue(minMonth)&&k<=keyFromMonthValue(maxMonth)}
-function openPicker(kind){activePicker=kind;let raw=kind==='projectFrom'?fromValue:kind==='projectTo'?toValue:kind==='regionFrom'?regionFromValue:regionToValue;const cur=raw?parseMonthValue(raw):parseMonthValue(maxMonth);pickerYear=cur.year;$('pickerTitle').textContent=(kind.endsWith('From')?'Период с':'Период по');renderPicker();$('pickerBackdrop').classList.add('open')}
-function renderPicker(){if(!pickerYear)return;$('yearValue').textContent=pickerYear;const raw=activePicker==='projectFrom'?fromValue:activePicker==='projectTo'?toValue:activePicker==='regionFrom'?regionFromValue:regionToValue;const cur=raw?parseMonthValue(raw):{year:pickerYear,month:0};$('monthGrid').innerHTML=monthNames.slice(1).map((name,i)=>{const m=i+1,a=monthAllowed(pickerYear,m),s=cur.year===pickerYear&&cur.month===m;return `<button type="button" class="month-option ${s?'selected':''} ${a?'':'disabled'}" data-month="${m}" ${a?'':'disabled'}>${name.slice(0,3)}</button>`}).join('');$('monthGrid').querySelectorAll('.month-option:not(.disabled)').forEach(b=>b.addEventListener('click',()=>{const v=`${pickerYear}-${String(b.dataset.month).padStart(2,'0')}`;if(activePicker==='projectFrom')fromValue=v;else if(activePicker==='projectTo')toValue=v;else if(activePicker==='regionFrom')regionFromValue=v;else regionToValue=v;syncPeriodButtons();syncRegionPeriod();closePicker()}));$('yearPrev').disabled=pickerYear<=parseMonthValue(minMonth).year;$('yearNext').disabled=pickerYear>=parseMonthValue(maxMonth).year}
-function closePicker(){$('pickerBackdrop').classList.remove('open')}
+function periodText(v){if(!v)return '—';const {year,month}=parseMonthValue(v);return `${monthNames[month-1]} ${year}`}
+function syncPeriodButtons(){$('fromBtn').textContent=periodText(fromValue);$('toBtn').textContent=periodText(toValue);$('regionFromBtn').textContent=periodText(regionFromValue);$('regionToBtn').textContent=periodText(regionToValue)}
+function openPicker(target){pickerTarget=target;const current=target==='from'?fromValue:target==='to'?toValue:target==='regionFrom'?regionFromValue:regionToValue;pickerYear=current?parseMonthValue(current).year:(maxMonth?.year||new Date().getFullYear());$('pickerTitle').textContent=target==='from'||target==='regionFrom'?'Период с':'Период по';renderPicker();$('pickerBackdrop').classList.add('open')}
+function closePicker(){$('pickerBackdrop').classList.remove('open');pickerTarget=null}
+function renderPicker(){$('yearValue').textContent=pickerYear;$('monthGrid').innerHTML=monthNames.map((name,i)=>{const m=i+1,key=monthKey(pickerYear,m),min=minMonth?monthKey(minMonth.year,minMonth.month):-Infinity,max=maxMonth?monthKey(maxMonth.year,maxMonth.month):Infinity,disabled=key<min||key>max;const current=pickerTarget==='from'?fromValue:pickerTarget==='to'?toValue:pickerTarget==='regionFrom'?regionFromValue:regionToValue;const selected=current===`${pickerYear}-${String(m).padStart(2,'0')}`;return `<button type="button" class="month-option ${selected?'selected':''} ${disabled?'disabled':''}" data-month="${m}" ${disabled?'disabled':''}>${name}</button>`}).join('')}
+function chooseMonth(m){const v=`${pickerYear}-${String(m).padStart(2,'0')}`;if(pickerTarget==='from')fromValue=v;else if(pickerTarget==='to')toValue=v;else if(pickerTarget==='regionFrom')regionFromValue=v;else regionToValue=v;syncPeriodButtons();closePicker()}
 
+function hideProjectReport(){Object.values(charts).forEach(c=>c?.destroy());charts={};$('projectPassportCard').style.display='none';$('projectUtpCard').style.display='none';$('projectCharts').style.display='none';$('kpis').innerHTML='';$('insight').innerHTML='';$('insight').style.display='none'}
+function getSelectedRows(){return pd.filter(r=>selectedProjectIds.has(r.projectId)&&(!fromValue||r.key>=monthKey(...Object.values(parseMonthValue(fromValue))))&&(!toValue||r.key<=monthKey(...Object.values(parseMonthValue(toValue)))))}
+function kpi(k,v,h=''){return `<div class="kpi card"><div class="k">${k}</div><div class="v">${v}</div>${h?`<div class="hint">${h}</div>`:''}</div>`}
+function renderPassport(p,target='project'){const items=[['Застройщик',p.developer],['Регион',p.region],['Город / район',p.city],['Адрес',p.address],['Статус помещений',p.status],['Класс',p.klass],['Срок сдачи',p.deadline],['Всего помещений',p.totalUnits==null?'':fmt0.format(p.totalUnits)],['Общая продаваемая площадь, м²',p.totalArea==null?'':fmt2.format(p.totalArea)],['Отделка',p.finish]].filter(x=>x[1]!==''&&x[1]!=null);$(target==='project'?'projectName':'dataProjectName').textContent=p.name;$(target==='project'?'passport':'dataPassport').innerHTML=items.map(([k,v])=>`<div class="pitem"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+function renderPairs(obj,el){const entries=Object.entries(obj||{}).filter(([,v])=>sval(v)!=='');el.innerHTML=entries.length?entries.map(([k,v])=>`<div class="uitem"><div class="k">${k}</div><div class="v">${v}</div></div>`).join(''):'<div class="multi-empty">Нет заполненных данных</div>'}
 function makeMultiChart(id,type,labels,series,tooltipFormatter,axisFormatter,extra={}){if(charts[id])charts[id].destroy();const palette=['#36516f','#7b8794','#9b6f65','#657a68','#786f91','#9a865e'];const datasets=series.map((s,i)=>({label:s.name,data:s.data,borderColor:palette[i%palette.length],backgroundColor:type==='bar'?palette[i%palette.length]:'transparent',pointBackgroundColor:palette[i%palette.length],pointBorderColor:palette[i%palette.length],borderWidth:2,pointRadius:type==='line'?3.5:2,tension:.25,fill:false,spanGaps:true}));const yTicks={callback:v=>axisFormatter(v)};if(extra.stepSize)yTicks.stepSize=extra.stepSize;charts[id]=new Chart($(id),{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:series.length>1,position:'bottom'},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${tooltipFormatter(c.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxRotation:0}},y:{grid:{color:'#edf1f5'},ticks:yTicks,beginAtZero:!!extra.beginAtZero}}}})}
-
-function clearProjectResults(){ $('kpis').innerHTML='';$('projectPassportCard').style.display='none';$('projectUtpCard').style.display='none';$('projectCharts').style.display='none';$('topBadge').textContent='';$('insight').className='empty-report card';$('insight').innerHTML='Выберите один или несколько проектов и период, затем нажмите «Показать отчёт».';Object.keys(charts).filter(k=>!k.startsWith('r')).forEach(k=>{charts[k]?.destroy();delete charts[k]}) }
-function updateProject(){if(!selectedProjectIds.length||!fromValue||!toValue){clearProjectResults();return}let fk=keyFromMonthValue(fromValue),tk=keyFromMonthValue(toValue);if(fk>tk){[fromValue,toValue]=[toValue,fromValue];syncPeriodButtons();fk=keyFromMonthValue(fromValue);tk=keyFromMonthValue(toValue)}const ps=projects.filter(p=>selectedProjectIds.includes(String(p.id))),single=ps.length===1?ps[0]:null;$('projectPassportCard').style.display=single?'block':'none';$('projectUtpCard').style.display=single?'block':'none';$('projectCharts').style.display='grid';if(single){$('projectName').textContent=single.name;$('passport').innerHTML=passportItemsFor(single).map(x=>`<div class="pitem"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');renderKeyValues($('utp'),Object.entries(utpByProject[single.id]||{}))}$('topBadge').textContent=single?`${single.name} · ID ${single.id}`:`Выбрано проектов: ${ps.length}`;const per=ps.map(p=>({project:p,rows:projectPdRows(p.id).filter(r=>r.key>=fk&&r.key<=tk&&r.units!==null)})),all=per.flatMap(x=>x.rows);if(!all.length){$('kpis').innerHTML='';$('insight').innerHTML='Нет данных за выбранный период.';$('projectCharts').style.display='none';return}const sum=k=>all.reduce((s,r)=>s+(r[k]||0),0),units=sum('units'),area=sum('area'),value=sum('value'),avg=area?value/area:null,deal=units?area/units:null,totalUnits=ps.reduce((s,p)=>s+(p.totalUnits||0),0),totalArea=ps.reduce((s,p)=>s+(p.totalArea||0),0),paceU=totalUnits?units/totalUnits*100:null,paceA=totalArea?area/totalArea*100:null;let cumU=null,cumA=null;if(per.every(x=>x.rows.length)){const ends=per.map(x=>x.rows[x.rows.length-1]);cumU=totalUnits?ends.reduce((s,r)=>s+(r.cumUnits||0),0)/totalUnits*100:null;cumA=totalArea?ends.reduce((s,r)=>s+(r.cumArea||0),0)/totalArea*100:null}const cards=[['Продано лотов',fmt0(units)+' шт.','за выбранный период'],['Проданная площадь',fmt2(area)+' м²','за выбранный период'],['Объём реализации',money(value),'за выбранный период'],['Средняя цена, ₽/м²',money(avg)+'/м²','взвешенная по площади'],['Средняя площадь в сделке',fmt2(deal)+' м²','площадь / количество'],['Темп продаж, шт.',pct(paceU),'за выбранный период'],['Темп продаж, м²',pct(paceA),'за выбранный период'],['Реализовано накопительно',pct(cumU)+' шт. · '+pct(cumA)+' м²','на конец периода']];$('kpis').innerHTML=cards.map(c=>`<div class="kpi card"><div class="k">${c[0]}</div><div class="v">${c[1]}</div><div class="hint">${c[2]}</div></div>`).join('');$('insight').innerHTML=ps.length>1?`За период <strong>${displayMonthValue(fromValue)} — ${displayMonthValue(toValue)}</strong> суммарно по ${ps.length} проектам: ${fmt0(units)} шт., ${fmt2(area)} м², ${money(value)}. На графиках показатели разделены по проектам / очередям.`:`За период <strong>${displayMonthValue(fromValue)} — ${displayMonthValue(toValue)}</strong>: ${fmt0(units)} шт., ${fmt2(area)} м², ${money(value)}.`;const keys=[...new Set(all.map(r=>r.key))].sort((a,b)=>a-b),labels=keys.map(k=>`${short[k%100]} ${String(Math.floor(k/100)).slice(2)}`),series=m=>per.map(x=>({name:x.project.name,data:keys.map(k=>x.rows.find(z=>z.key===k)?.[m]??null)}));makeMultiChart('unitsChart','bar',labels,series('units'),v=>fmt0(v)+' шт.',fmt0);makeMultiChart('areaChart','bar',labels,series('area'),v=>fmt2(v)+' м²',fmt1);makeMultiChart('valueChart','bar',labels,series('value'),money,compactMoney);makeMultiChart('priceChart','line',labels,series('price'),v=>money(v)+'/м²',compactPrice,{stepSize:50000,beginAtZero:true})}
-
-function renderProjectCard(){const id=$('dataProject').value;if(!id){['dataPassportCard','dataUtpCard','dataCharacteristicsCard'].forEach(x=>$(x).style.display='none');return}const p=projects.find(x=>String(x.id)===String(id));if(!p)return;['dataPassportCard','dataUtpCard','dataCharacteristicsCard'].forEach(x=>$(x).style.display='block');$('dataProjectName').textContent=p.name;$('dataPassport').innerHTML=passportItemsFor(p).map(x=>`<div class="pitem"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');renderKeyValues($('dataUtp'),Object.entries(utpByProject[id]||{}));const chars=characteristicLabels.map(k=>[k,(characteristicsByProject[id]||{})[k]??'—']);renderKeyValues($('dataCharacteristics'),chars)}
-
-function deadlineKey(s){const m=String(s||'').match(/([1-4])\D+(20\d{2})/i);return m?Number(m[2])*10+Number(m[1]):null}
-function updateRegion(){if(!regionFromValue||!regionToValue){$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Выберите период и нажмите «Показать отчёт».';$('regionKpis').innerHTML='';$('regionCharts').style.display='none';return}let fk=keyFromMonthValue(regionFromValue),tk=keyFromMonthValue(regionToValue);if(fk>tk){[regionFromValue,regionToValue]=[regionToValue,regionFromValue];syncRegionPeriod();fk=keyFromMonthValue(regionFromValue);tk=keyFromMonthValue(regionToValue)}let ps=projects.filter(p=>(!$('regionFilter').value||p.region===$('regionFilter').value)&&(!$('cityFilter').value||p.city===$('cityFilter').value)&&(!$('regionDeveloper').value||p.developer===$('regionDeveloper').value)&&(!$('regionProject').value||p.name===$('regionProject').value)&&(!$('statusFilter').value||p.status===$('statusFilter').value)&&(!$('classFilter').value||p.klass===$('classFilter').value));const dFrom=deadlineKey($('deadlineFrom').value),dTo=deadlineKey($('deadlineTo').value);if(dFrom)ps=ps.filter(p=>deadlineKey(p.deadline)!=null&&deadlineKey(p.deadline)>=dFrom);if(dTo)ps=ps.filter(p=>deadlineKey(p.deadline)!=null&&deadlineKey(p.deadline)<=dTo);const ids=new Set(ps.map(p=>String(p.id)));const rows=pd.filter(r=>ids.has(String(r.projectId))&&r.key>=fk&&r.key<=tk&&r.units!==null);if(!rows.length){$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Нет данных по выбранным фильтрам.';$('regionKpis').innerHTML='';$('regionCharts').style.display='none';return}$('regionPlaceholder').style.display='none';const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0),units=sum('units'),area=sum('area'),value=sum('value'),avg=area?value/area:null,deal=units?area/units:null;$('regionKpis').innerHTML=[['Продано лотов',fmt0(units)+' шт.'],['Проданная площадь',fmt2(area)+' м²'],['Объём реализации',money(value)],['Средняя цена, ₽/м²',money(avg)+'/м²'],['Средняя площадь в сделке',fmt2(deal)+' м²']].map(x=>`<div class="kpi card"><div class="k">${x[0]}</div><div class="v">${x[1]}</div><div class="hint">за выбранный период</div></div>`).join('');$('regionCharts').style.display='grid';const keys=[...new Set(rows.map(r=>r.key))].sort((a,b)=>a-b),labels=keys.map(k=>`${short[k%100]} ${String(Math.floor(k/100)).slice(2)}`),per=ps.map(p=>({project:p,rows:rows.filter(r=>String(r.projectId)===String(p.id))})),series=m=>per.filter(x=>x.rows.length).map(x=>({name:x.project.name,data:keys.map(k=>x.rows.find(z=>z.key===k)?.[m]??null)}));makeMultiChart('rUnitsChart','bar',labels,series('units'),v=>fmt0(v)+' шт.',fmt0);makeMultiChart('rAreaChart','bar',labels,series('area'),v=>fmt2(v)+' м²',fmt1);makeMultiChart('rValueChart','bar',labels,series('value'),money,compactMoney);makeMultiChart('rPriceChart','line',labels,series('price'),v=>money(v)+'/м²',compactPrice,{stepSize:50000,beginAtZero:true})}
+function renderProjectReport(){
+  if(!selectedProjectIds.size){alert('Выберите хотя бы один проект.');return}if(!fromValue||!toValue){alert('Выберите период с и по или нажмите «Весь период».');return}if(fromValue>toValue){alert('Период «с» не может быть позже периода «по».');return}
+  const rows=getSelectedRows(),selected=projects.filter(p=>selectedProjectIds.has(p.id));if(!rows.length){hideProjectReport();$('insight').style.display='block';$('insight').innerHTML='За выбранный период нет данных ПД.';return}
+  const valid=rows.filter(r=>r.units!=null),sumUnits=valid.reduce((s,r)=>s+r.units,0),sumArea=valid.reduce((s,r)=>s+(r.area||0),0),sumValue=valid.reduce((s,r)=>s+(r.value||0),0),avgPrice=sumArea?sumValue/sumArea:0,avgDeal=sumUnits?sumArea/sumUnits:0,totalUnits=selected.reduce((s,p)=>s+(p.totalUnits||0),0),totalArea=selected.reduce((s,p)=>s+(p.totalArea||0),0),paceUnits=totalUnits?sumUnits/totalUnits*100:0,paceArea=totalArea?sumArea/totalArea*100:0;
+  const endRows=selected.map(p=>pd.filter(r=>r.projectId===p.id&&r.key<=monthKey(...Object.values(parseMonthValue(toValue)))).sort((a,b)=>b.key-a.key)[0]).filter(Boolean),cumUnits=endRows.reduce((s,r)=>s+(r.cumUnits||0),0),cumArea=endRows.reduce((s,r)=>s+(r.cumArea||0),0);
+  $('kpis').innerHTML=kpi('Продано лотов',fmt0.format(sumUnits),'за выбранный период')+kpi('Проданная площадь',area(sumArea),'за выбранный период')+kpi('Объём реализации',money(sumValue),'за выбранный период')+kpi('Средняя цена, ₽/м²',money(avgPrice),'взвешенная')+kpi('Средняя площадь в сделке',area(avgDeal))+kpi('Темп продаж, шт.',pct(paceUnits))+kpi('Темп продаж, м²',pct(paceArea))+kpi('Реализовано накопительно',`${fmt0.format(cumUnits)} шт. · ${fmt2.format(cumArea)} м²`);
+  const neg=valid.filter(r=>r.units<0||r.area<0||r.value<0),best=valid.slice().sort((a,b)=>(b.value||0)-(a.value||0))[0],worst=valid.slice().sort((a,b)=>(a.value||0)-(b.value||0))[0];$('insight').style.display='block';$('insight').innerHTML=`За выбранный период реализовано <strong>${fmt0.format(sumUnits)} лотов</strong> на <strong>${money(sumValue)}</strong>. ${best?`Максимум: <strong>${best.month} ${best.year}</strong> — ${money(best.value||0)}, ${fmt0.format(best.units||0)} шт. `:''}${worst?`Минимум: <strong>${worst.month} ${worst.year}</strong> — ${money(worst.value||0)}, ${fmt0.format(worst.units||0)} шт.`:''}${neg.length?` <span class="warn">Есть месяцы с отрицательной динамикой — корректировки / расторжения.</span>`:''}`;
+  if(selected.length===1){renderPassport(selected[0]);$('projectPassportCard').style.display='block';renderPairs(utpByProject[selected[0].id],$('utp'));$('projectUtpCard').style.display='block'}else{$('projectPassportCard').style.display='none';$('projectUtpCard').style.display='none'}
+  const keys=[...new Set(rows.map(r=>r.key))].sort((a,b)=>a-b),labels=keys.map(k=>`${monthNames[k%100-1].slice(0,3)} ${Math.floor(k/100)}`);const seriesFor=metric=>selected.map(p=>({name:p.name,data:keys.map(k=>rows.find(r=>r.projectId===p.id&&r.key===k)?.[metric]??null)}));$('projectCharts').style.display='grid';makeMultiChart('unitsChart','bar',labels,seriesFor('units'),v=>fmt0.format(v),v=>fmt0.format(v),{beginAtZero:true});makeMultiChart('areaChart','bar',labels,seriesFor('area'),v=>`${fmt2.format(v)} м²`,v=>fmt0.format(v),{beginAtZero:true});makeMultiChart('valueChart','bar',labels,seriesFor('value'),v=>money(v),v=>`${fmt0.format(v/1e6)} млн ₽`,{beginAtZero:true});makeMultiChart('priceChart','line',labels,seriesFor('price'),v=>v==null?'—':money(v),v=>`${fmt0.format(v/1000)} т.р.`,{stepSize:50000});
+}
+function renderDataProject(){const id=$('dataProject').value,p=projects.find(x=>x.id===id);if(!p){alert('Выберите проект.');return}renderPassport(p,'data');renderPairs(utpByProject[id],$('dataUtp'));renderPairs(characteristicsByProject[id],$('dataCharacteristics'));$('dataEmpty').style.display='none';$('dataContent').style.display='block'}
+function clearDataProject(){$('dataDeveloper').value='';$('dataProject').value='';refreshDataProject();$('dataContent').style.display='none';$('dataEmpty').style.display='block'}
+function clearRegion(){['regionFilter','cityFilter','regionDeveloper','regionProject','regionStatus','regionClass','deadlineFrom','deadlineTo'].forEach(id=>$(id).value='');regionFromValue='';regionToValue='';syncPeriodButtons();refreshRegionProject();$('regionSummary').style.display='none';$('regionPlaceholder').style.display='block'}
+function clearProject(){selectedProjectIds.clear();$('developerFilter').value='';fromValue='';toValue='';syncPeriodButtons();refreshProjectMulti();hideProjectReport()}
 
 function bindEvents(){
- document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$(btn.dataset.view).classList.add('active');const v=btn.dataset.view;$('pageTitle').textContent=v==='regionView'?'Аналитика региона':v==='dataView'?'Данные о проекте':'Аналитика по проектам';$('topBadge').textContent=''}));
- $('projectMultiBtn').addEventListener('click',e=>{e.stopPropagation();$('projectMultiPanel').classList.toggle('open')});document.addEventListener('click',e=>{if(!$('projectMultiPanel').contains(e.target)&&e.target!==$('projectMultiBtn'))$('projectMultiPanel').classList.remove('open')});$('developerFilter').addEventListener('input',syncProjectOptions);$('developerFilter').addEventListener('change',syncProjectOptions);
- $('fromBtn').addEventListener('click',()=>openPicker('projectFrom'));$('toBtn').addEventListener('click',()=>openPicker('projectTo'));$('regionFromBtn').addEventListener('click',()=>openPicker('regionFrom'));$('regionToBtn').addEventListener('click',()=>openPicker('regionTo'));$('pickerClose').addEventListener('click',closePicker);$('pickerBackdrop').addEventListener('click',e=>{if(e.target===$('pickerBackdrop'))closePicker()});$('yearPrev').addEventListener('click',()=>{if(pickerYear>parseMonthValue(minMonth).year){pickerYear--;renderPicker()}});$('yearNext').addEventListener('click',()=>{if(pickerYear<parseMonthValue(maxMonth).year){pickerYear++;renderPicker()}});
- $('reset').addEventListener('click',()=>{fromValue=minMonth;toValue=maxMonth;syncPeriodButtons()});$('projectClear').addEventListener('click',()=>{$('developerFilter').value='';selectedProjectIds=[];syncProjectOptions();fromValue=toValue=null;syncPeriodButtons();clearProjectResults()});$('apply').addEventListener('click',updateProject);
- $('dataDeveloper').addEventListener('change',()=>{syncDataProjects();renderProjectCard()});$('dataProject').addEventListener('change',()=>{});$('dataApply').addEventListener('click',renderProjectCard);$('dataClear').addEventListener('click',()=>{$('dataDeveloper').value='';syncDataProjects();$('dataProject').value='';renderProjectCard()});
- $('regionApply').addEventListener('click',updateRegion);$('regionReset').addEventListener('click',()=>{['regionFilter','cityFilter','regionDeveloper','regionProject','statusFilter','classFilter','deadlineFrom','deadlineTo'].forEach(id=>$(id).value='');regionFromValue=regionToValue=null;syncRegionPeriod();$('regionKpis').innerHTML='';$('regionCharts').style.display='none';$('regionPlaceholder').style.display='block';$('regionPlaceholder').textContent='Выберите параметры и нажмите «Показать отчёт».';Object.keys(charts).filter(k=>k.startsWith('r')).forEach(k=>{charts[k]?.destroy();delete charts[k]})});
+  document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$(btn.dataset.view).classList.add('active');$('pageTitle').textContent=btn.textContent}));
+  $('developerFilter').addEventListener('input',()=>{selectedProjectIds.clear();refreshProjectMulti()});$('projectMultiBtn').addEventListener('click',e=>{e.stopPropagation();$('projectMultiPanel').classList.toggle('open')});$('projectMultiPanel').addEventListener('click',e=>{const b=e.target.closest('.multi-option');if(!b)return;const id=b.dataset.id;if(selectedProjectIds.has(id))selectedProjectIds.delete(id);else selectedProjectIds.add(id);refreshProjectMulti()});document.addEventListener('click',e=>{if(!e.target.closest('.project-multi'))$('projectMultiPanel').classList.remove('open')});
+  $('fromBtn').onclick=()=>openPicker('from');$('toBtn').onclick=()=>openPicker('to');$('regionFromBtn').onclick=()=>openPicker('regionFrom');$('regionToBtn').onclick=()=>openPicker('regionTo');$('pickerClose').onclick=closePicker;$('pickerBackdrop').addEventListener('click',e=>{if(e.target===$('pickerBackdrop'))closePicker()});$('yearPrev').onclick=()=>{pickerYear--;renderPicker()};$('yearNext').onclick=()=>{pickerYear++;renderPicker()};$('monthGrid').addEventListener('click',e=>{const b=e.target.closest('.month-option');if(b&&!b.disabled)chooseMonth(Number(b.dataset.month))});
+  $('reset').onclick=()=>{if(minMonth&&maxMonth){fromValue=`${minMonth.year}-${String(minMonth.month).padStart(2,'0')}`;toValue=`${maxMonth.year}-${String(maxMonth.month).padStart(2,'0')}`;syncPeriodButtons()}};$('projectClear').onclick=clearProject;$('apply').onclick=renderProjectReport;
+  ['regionFilter','cityFilter'].forEach(id=>$(id).addEventListener('change',refreshRegionProject));$('regionDeveloper').addEventListener('input',refreshRegionProject);$('regionClear').onclick=clearRegion;$('regionApply').onclick=()=>{$('regionPlaceholder').style.display='none';$('regionSummary').style.display='block'};
+  $('dataDeveloper').addEventListener('input',refreshDataProject);$('dataClear').onclick=clearDataProject;$('dataApply').onclick=renderDataProject;
 }
 
-async function start(){
- // Интерфейс и кнопки инициализируются сразу, независимо от доступности Google Sheets.
- bindEvents();
- syncPeriodButtons();
- syncRegionPeriod();
- clearProjectResults();
- $('regionPlaceholder').textContent='Выберите параметры и нажмите «Показать отчёт».';
- $('topBadge').textContent='Загрузка данных…';
- try{
-  const data=await loadApiData();
-  buildData(data.projects||[],data.pd||[],data.utp||[],data.characteristics||[]);
-  populateFilters();
-  const updated=data.updatedAt?new Date(data.updatedAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'';
-  $('topBadge').textContent=`Данные загружены · ${projects.length} проектов${updated?' · '+updated:''}`;
- }catch(err){
-  console.error(err);
-  $('topBadge').textContent='Ошибка загрузки';
-  $('insight').className='empty-report card';
-  $('insight').innerHTML=`Не удалось загрузить данные через API Google Apps Script.<br><small>${err.message}</small>`;
-  $('regionPlaceholder').textContent='Не удалось загрузить данные через API.';
- }
+async function init(){
+  bindEvents();hideProjectReport();syncPeriodButtons();$('topBadge').textContent='Загрузка данных…';
+  try{
+    const data=await loadApiData();
+    buildData(data.projects||[],data.pd||[],data.utp||[],data.characteristics||[]);populateFilters();
+    const t=data.updatedAt?new Date(data.updatedAt):new Date();const tm=Number.isNaN(t.getTime())?'':` · ${t.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`;
+    $('topBadge').textContent=`Данные загружены · ${projects.length} проектов${tm}`;
+  }catch(err){console.error(err);$('topBadge').textContent='Ошибка загрузки';$('insight').style.display='block';$('insight').innerHTML=`Не удалось загрузить данные через API.<br><span style="font-size:12px;color:var(--muted)">${String(err.message||err)}</span>`;}
 }
-start();
+init();
 </script>
 </body>
 </html>
